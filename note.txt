@@ -1,0 +1,791 @@
+FOR THE MODEL WITH ARRAY AND FILE-SYSTEM
+
+// const users = [];
+// used above when saving with array
+const fs = require("fs");
+const path = require("path");
+const rootDir = require("../util/path");
+
+const p = path.join(
+  path.dirname(process.mainModule.filename),
+  "data",
+  "users.json"
+);
+
+module.exports = class User {
+  constructor(username, email, password) {
+    this.name = username;
+    this.email = email;
+    this.password = password;
+  }
+
+  save() {
+    // users.push(this);
+    // used above when saving with array
+
+    fs.readFile(p, (err, fileContent) => {
+      // console.log(fileContent);
+      let users = [];
+      if (!err) {
+        // parse method takes incomming json and gives us a javascript array or object or whatever is in the file while stringify method takes in javascript object or array and converts it to json
+        users = JSON.parse(fileContent);
+      }
+      users.push(this);
+      fs.writeFile(p, JSON.stringify(users), (err) => {
+        console.log(err);
+      });
+      console.log(users);
+    });
+  }
+
+  // cbf refers to the anonymous function we passed in through fetchAll
+  // The anonymous function expects an argument, in the case of error, it will display and empty array, but if everything goes right it will parse in the expected argument which is an array , then the function knows how to deal with it.
+  static fetchAll(cbf) {
+    // return users;
+    // used above when saving with array
+
+    fs.readFile(p, (err, fileContent) => {
+      if (err) {
+        cbf([]);
+      }
+      cbf(JSON.parse(fileContent));
+    });
+  }
+};
+
+FOR THE CONTROLLER WITH ARRAY AND FILE-SYSTEM
+
+const User = require("../models/user");
+
+
+// SIGNUP CONTROLLER
+const signup = (req, res, next) => {
+  const name = req.body.name;
+  const email = req.body.email;
+  const password = req.body.password;
+  const user = new User(name, email, password);
+  user.save();
+  res.status(201).json({
+    message: "Signup successful !",
+    user: user,
+  });
+};
+
+// GET USERS CONTROLLER
+// const getUsers = (req, res, next) => {
+//   const users = User.fetchAll();
+//   res.status(200).json({
+//     message: "All users",
+//     users: users,
+//   });
+// };
+// The above is for working with array
+
+const getUsers = (req, res, next) => {
+  User.fetchAll((users) => {
+    res.status(200).json({
+      message: "All users",
+      users: users,
+    });
+  });
+};
+// The above is for storing data with file which has a callback
+
+
+
+FOR THE MODEL WITH MYSQL QUERYING WITHOUT ORM
+
+// Working with MYSQL Database Query directly without an ORM
+// const db = require("../util/database");
+
+module.exports = class User {
+  constructor(username, email, password) {
+    this.name = username;
+    this.email = email;
+    this.password = password;
+  }
+
+  save() {
+    return db.execute(
+      "INSERT INTO users (name, email, password) VALUES (?, ?, ?) ",
+      [this.name, this.email, this.password]
+    );
+  }
+
+  static fetchAll() {
+    return db.execute("SELECT * FROM users");
+  }
+
+  static findById(id) {
+    return db.execute("SELECT * FROM users WHERE users.id= ?", [id]);
+  }
+
+  static updateById(id) {
+    return db.execute("UPDATE users SET name =?, email =?, password =?  WHERE users.id = ?", [id]);
+  }
+  static deleteById(id) {
+    return db.execute("DELETE FROM users WHERE users.id= ?", [id]);
+  }
+};
+
+FOR THE CONTROLLER WITH MYSQL QUERYING WITHOUT ORM
+
+// WORKING WITH SQL QUERY LANGUAGE
+const HttpError = require("../models/http-error");
+const { validationResult } = require("express-validator");
+const User = require("../models/user");
+
+// SIGNUP CONTROLLER
+const signup = (req, res, next) => {
+  const name = req.body.name;
+  const email = req.body.email;
+  const password = req.body.password;
+  const user = new User(name, email, password);
+  user
+    .save()
+    .then((uzer) => {
+      // console.log(uzer[0]);
+      res.status(201).json({
+        message: "Signup successful !",
+        user: uzer[0],
+      });
+    })
+    .catch((err) => console.log(err));
+};
+
+// GET ALL USERS CONTROLLER
+const getUsers = (req, res, next) => {
+  User.fetchAll()
+    // .then(([rows, fieldData]) => {
+    //   res.status(200).json({
+    //     message: "All users",
+    //     users: rows,
+    //   });
+    // })
+    .then((results) => {
+      res.status(200).json({
+        message: "All users",
+        users: results[0],
+      });
+    })
+    .catch((err) => console.log(err));
+};
+
+// GET A SINGLE USER
+const getUser = (req, res, next) => {
+  const userId = req.params.userId;
+  User.findById(userId)
+    .then(([user]) => {
+      res.status(200).json({
+        message: "Single user",
+        user: user[0],
+      });
+    })
+    .catch((err) => console.log(err));
+};
+
+// EDIT A SINGLE USER
+const updateUser = (req, res, next) => {
+  const userId = req.params.userId;
+  const { name, email, password } = req.body;
+  let updatedUser;
+
+  User.findById(userId)
+    .then(([updatedUser]) => {
+      updatedUser.name = name;
+      updatedUser.email = email;
+      updatedUser.password = password;
+      console.log(updatedUser);
+      return updatedUser.save();
+    })
+    .then((updatedUser) => {
+      res.status(200).json({
+        message: "User updated successfully",
+        user: updatedUser,
+      });
+    })
+    .catch((err) => console.log(err));
+};
+
+// DELETE A SINGLE USER
+const deleteUserById = (req, res, next) => {
+  const userId = req.params.userId;
+  User.deleteById(userId)
+    .then(([user]) => {
+      console.log(user);
+      res.status(200).json({
+        message: "Deleted user Successful",
+        user: user,
+      });
+    })
+    .catch((err) => console.log(err));
+};
+
+// LOGIN CONTROLLER
+const login = (req, res, next) => {
+  res.json({ message: "Yeah, I bet you , we are comming there!" });
+};
+
+exports.signup = signup;
+exports.getUsers = getUsers;
+exports.getUser = getUser;
+exports.editUser = updateUser;
+exports.deleteUser = deleteUserById;
+exports.login = login;
+
+
+
+
+USERS CONTROLLER WITHOUT INPUT VALIDATION
+
+const HttpError = require("../models/http-error");
+const User = require("../models/user");
+
+// @route POST api/user/signup
+// @desc To create or signup a user
+// @access Public
+const signup = (req, res, next) => {
+  const name = req.body.name;
+  const email = req.body.email;
+  const password = req.body.password;
+
+  if (!name || !email || !password) {
+    return next(new HttpError("Input missing required fields.", 400));
+  }
+  User.findOne({ where: { email: email } }).then((user) => {
+    if (user) {
+      return next(new HttpError("A user with this email does  exist .", 422)); //422 code is used for invalid inputs
+    }
+  });
+
+  User.create({
+    name: name,
+    email: email,
+    password: password,
+  })
+    .then((uzer) => {
+      res.status(201).json({
+        status: "Successful",
+        msg: "User Signedup !",
+        user: uzer,
+      });
+    })
+    .catch((err) => {
+      console.log(err);
+    });
+};
+
+// @route POST api/user/login
+// @desc To authenticate or login an already registered  user
+// @access Public
+const login = (req, res, next) => {
+  const email = req.body.email;
+  const password = req.body.password;
+  let loadedUser;
+
+  if (!email || !password) {
+    return next(
+      new HttpError("Request missing username or password parameters.", 400)
+    );
+  }
+
+  User.findOne({ where: { email: email } })
+    .then((user) => {
+      if (!user || user.password !== password) {
+        return next(
+          new HttpError("A user with this credential does not exist .", 401)
+        );
+      }
+      return res.status(200).json({
+        status: "Successful",
+        msg: "Now you are logged in",
+        user: user,
+      });
+    })
+
+    .catch((err) => console.log(err));
+};
+
+exports.signup = signup;
+exports.login = login;
+
+
+
+
+
+
+
+ADMIN ROUTE BEFORE IMPLEMENTING EXPRESS VALIDATION 
+
+const express = require("express");
+const { check } = require("express-validator");
+
+const adminController = require("../controllers/admin-controller");
+
+const router = express.Router();
+
+// /api/admin/users/property => POST
+router.post("/property", adminController.createProperty);
+
+// /api/admin/properties => GET
+router.get("/properties", adminController.getProperties);
+
+// /api/admin/properties/propertyId => GET
+router.get("/properties/:propertyId", adminController.getPropertiesById);
+
+// /api/admin/properties/propertyId => PUT
+router.put("/properties/:propertyId", adminController.updatePropertiesById);
+
+// /api/admin/properties/propertyId => DELETE
+router.delete("/properties/:propertyId", adminController.deletePropertiesById);
+
+// /api/admin/users => GET
+router.get("/users", adminController.getUsers);
+
+// /api/admin/users/userId => GET
+router.get("/users/:userId", adminController.getUserById);
+
+// /api/admin/users/userId => DELETE
+router.delete("/users/:userId", adminController.deleteUserById);
+
+module.exports = router;
+
+
+USER CONTROLLER BEFORE BCRYPT
+
+const HttpError = require("../models/http-error");
+const User = require("../models/user");
+const { validationResult } = require("express-validator");
+const bcrypt = require("bcryptjs");
+
+// @route POST api/user/signup
+// @desc To create or signup a user
+// @access Public
+const signup = (req, res, next) => {
+  const errors = validationResult(req);
+  if (!errors.isEmpty()) {
+    return next(
+      new HttpError("Invalid inputs passed, please check your fields.", 422)
+    );
+  }
+  const name = req.body.name;
+  const email = req.body.email;
+  const password = req.body.password;
+
+  if (!name || !email || !password) {
+    return next(new HttpError("Input missing required fields.", 400));
+  }
+  User.findOne({ where: { email: email } })
+    .then((user) => {
+      if (user) {
+        return next(new HttpError("A user with this email does  exist .", 422)); //422 code is used for invalid inputs
+      } else {
+        User.create({
+          name: name,
+          email: email,
+          password: password,
+        })
+          .then((uzer) => {
+            res.status(201).json({
+              status: "Successful",
+              msg: "User Signedup !",
+              user: uzer,
+            });
+          })
+          .catch((err) => {
+            console.log(err);
+          });
+      }
+    })
+    .catch((err) => console.log(err));
+};
+
+// @route POST api/user/login
+// @desc To authenticate or login an already registered  user
+// @access Public
+const login = (req, res, next) => {
+  const email = req.body.email;
+  const password = req.body.password;
+  let loadedUser;
+
+  if (!email || !password) {
+    return next(
+      new HttpError("Request missing username or password parameters.", 400)
+    );
+  }
+
+  User.findOne({ where: { email: email } })
+    .then((user) => {
+      if (!user || user.password !== password) {
+        return next(
+          new HttpError("A user with this credential does not exist .", 401)
+        );
+      }
+      return res.status(200).json({
+        status: "Successful",
+        msg: "Now you are logged in",
+        user: user,
+      });
+    })
+
+    .catch((err) => console.log(err));
+};
+
+exports.signup = signup;
+exports.login = login;
+
+
+SERVER FILE WITH ALL COMMENTS
+
+const path = require("path");
+
+const express = require("express");
+const bodyParser = require("body-parser");
+
+const mongoose = require("mongoose");
+const sequelize = require("./util/database");
+const Property = require("./models/property");
+const User = require("./models/user");
+const Booking = require("./models/booking");
+const BookingItem = require("./models/booking-item");
+
+const usersRoutes = require("./routes/users-routes");
+const propertiesRoutes = require("./routes/properties-routes");
+const adminRoutes = require("./routes/admin-routes");
+
+const HttpError = require("./models/http-error");
+
+const app = express();
+
+// // Works with form
+// app.use(bodyParser.urlenconded());
+// This will pass any incoming request body and extract any json data which is there and convert it to regular javascript data structure like objects and arrays and then call next automatically so that we can reach the next middleware in line which are our own custom routes and then also add this json data there. So in the properties controller and create property will now be able to get the past body and we get it on a request body property
+
+app.use(bodyParser.json());
+
+// This middleware stores the user in the req and makes it possible for the user to be accessible from anywhere in the project
+app.use((req, res, next) => {
+  // we will reach out to the database
+  User.findByPk(1)
+    .then((user) => {
+      // console.log(user);
+      req.user = user;
+      next();
+    })
+    .catch((err) => console.log(err));
+});
+
+// => /api/users/
+app.use("/api/users", usersRoutes);
+
+// => /api/properties/
+app.use("/api/properties", propertiesRoutes);
+
+// => /api/admin/
+app.use("/api/admin", adminRoutes);
+
+// Error handling for unregistered routes
+app.use((req, res, next) => {
+  const error = new HttpError(
+    "could not find this route! To access property api, use http://localhost:7000/api/properties",
+    404
+  );
+  throw error;
+});
+// Error handling middleware
+app.use((error, req, res, next) => {
+  if (res.headerSent) {
+    return next(error);
+  }
+  res.status(error.code || 500);
+  res.json({
+    status: "Unsuccessful",
+    msg: error.message || "An unknown error occurred",
+  });
+});
+
+const PORT = 7000;
+
+// RELATIONS OR SEQUELIZE ASSOCIATIONS
+// // A property created by a user, and once the user is deleted the properties associated with the user deletes aswell, we can configure it with optional parameters
+// Property.belongsTo(User, { constraints: true, onDelete: "CASCADE" });
+// A user can select more than one property to booking list
+// User.hasMany(Property);
+User.hasOne(Booking);
+Booking.belongsTo(User);
+Booking.belongsToMany(Property, { through: BookingItem });
+Property.belongsToMany(Booking, { through: BookingItem });
+
+sequelize
+  // .sync({ force: true })
+  .sync()
+  .then((result) => {
+    // console.log(result);
+    return User.findByPk(1);
+  })
+  .then((user) => {
+    if (!user) {
+      return User.create({
+        name: "Peter Ihimire",
+        email: "pihimire@gmail.com",
+        password: "1234567",
+      });
+    }
+    return user; // or we can simply write [ return Promise.resolve(user) ] they all mean same as what is returned is always a promise that will technically resolve to a user.
+  })
+  .then((user) => {
+    // console.log(user);
+    app.listen(PORT, function () {
+      console.log(`Server running on port ${PORT}...`);
+    });
+  })
+  .catch((err) => console.log(err));
+// when we hit npm start it starts from the sequelize, but when we register a request it starts from the top down to the bottom , then at that time will it see the user already in the request funnel and makes use of it.
+
+
+
+
+
+
+
+
+
+
+THIS IS THE SERVER FILE WITH THE DUMMY USER
+const express = require("express");
+const bodyParser = require("body-parser");
+
+// MODELS
+const sequelize = require("./util/database");
+const Property = require("./models/property");
+const User = require("./models/user");
+const Booking = require("./models/booking");
+const BookingItem = require("./models/booking-item");
+
+// ROUTES
+const usersRoutes = require("./routes/users-routes");
+const propertiesRoutes = require("./routes/properties-routes");
+const adminRoutes = require("./routes/admin-routes");
+
+const HttpError = require("./models/http-error");
+
+const app = express();
+
+// MIDDLEWARES
+app.use(bodyParser.json());
+
+// FOR C.O.R.S ERROR
+app.use((req, res, next) => {
+  res.setHeader("Access-Control-Allow-Origin", "*");
+  res.setHeader(
+    "Access-Control-Allow-Methods",
+    "GET, POST, PUT, PATCH, DELETE"
+  );
+  res.setHeader(
+    "Access-Control-Allow-Headers",
+    "Content-Type,Accept, Origin, X-Requested-With, Authorization"
+  );
+  next();
+});
+
+// This middleware stores the user in the req and makes it possible for the user to be accessible from anywhere in the project
+app.use((req, res, next) => {
+  User.findByPk(1)
+    .then((user) => {
+      req.user = user;
+      next();
+    })
+    .catch((err) => console.log(err));
+});
+
+// ROUTES MIDDLEWARE
+
+// => /api/users/
+app.use("/api/users", usersRoutes);
+
+// => /api/properties/
+app.use("/api/properties", propertiesRoutes);
+
+// => /api/admin/
+app.use("/api/admin", adminRoutes);
+
+// ERROR HANDLING MIDDLEWARE FOR UNREGISTERED ROUTES
+app.use((req, res, next) => {
+  const error = new HttpError(
+    "could not find this route! To access property api, use http://localhost:7000/api/properties",
+    404
+  );
+  throw error;
+});
+// ERROR HANDLING MIDDLEWARE
+app.use((error, req, res, next) => {
+  if (res.headerSent) {
+    return next(error);
+  }
+  res.status(error.code || 500);
+  res.json({
+    status: "Unsuccessful",
+    msg: error.message || "An unknown error occurred",
+  });
+});
+
+const PORT = process.env.PORT || 7000;
+
+// RELATIONS OR SEQUELIZE ASSOCIATIONS
+User.hasOne(Booking);
+Booking.belongsTo(User);
+Booking.belongsToMany(Property, { through: BookingItem });
+Property.belongsToMany(Booking, { through: BookingItem });
+
+sequelize
+  // .sync({ force: true })
+  .sync()
+  .then((result) => {
+    return User.findByPk(1);
+  })
+  .then((user) => {
+    if (!user) {
+      return User.create({
+        name: "Peter Ihimire",
+        email: "pihimire@gmail.com",
+        password: "1234567",
+      });
+    }
+    return user;
+  })
+  .then((user) => {
+    return user.createBooking();
+  })
+  .then((user) => {
+    app.listen(PORT, function () {
+      console.log(`Server running on port ${PORT}...`);
+    });
+  })
+  .catch((err) => console.log(err));
+
+
+
+
+
+
+
+
+
+USER/AUTH CONTROLLER BEFORE ADDING JWT
+
+const HttpError = require("../models/http-error");
+const User = require("../models/user");
+const { validationResult } = require("express-validator");
+const bcrypt = require("bcryptjs");
+const jwt = require("jsonwebtoken");
+
+// @route POST api/user/signup
+// @desc To create or signup a user
+// @access Public
+const signup = (req, res, next) => {
+  const errors = validationResult(req);
+  if (!errors.isEmpty()) {
+    return next(
+      new HttpError("Invalid inputs passed, please check your fields.", 422)
+    );
+  }
+  const name = req.body.name;
+  const email = req.body.email;
+  const password = req.body.password;
+
+  if (!name || !email || !password) {
+    return next(new HttpError("Input missing required fields.", 400));
+  }
+  User.findOne({ where: { email: email } })
+    .then((user) => {
+      if (user) {
+        return next(
+          new HttpError("User exists already , please login instead .", 422)
+        ); //422 code is used for invalid inputs
+      } else {
+        return bcrypt
+          .hash(password, 12) //salt 12 round
+          .then((hashedPw) => {
+            console.log(hashedPw);
+            User.create({
+              name: name,
+              email: email,
+              password: hashedPw,
+            })
+              .then((uzer) => {
+                res.status(201).json({
+                  status: "Successful",
+                  msg: "User Signedup !",
+                  user: uzer,
+                });
+              })
+              .catch((error) => {
+                if (!error.statusCode) {
+                  error.statusCode = 500;
+                }
+                next(error);
+              });
+          })
+          .catch((error) => {
+            if (!error.statusCode) {
+              error.statusCode = 500;
+            }
+            next(error);
+          });
+      }
+    })
+    .catch((error) => {
+      if (!error.statusCode) {
+        error.statusCode = 500;
+      }
+      next(error);
+    });
+};
+
+// @route POST api/user/login
+// @desc To authenticate or login an already registered  user
+// @access Public
+const login = (req, res, next) => {
+  const email = req.body.email;
+  const password = req.body.password;
+
+  User.findOne({ where: { email: email } })
+    .then((user) => {
+      if (!user) {
+        return next(new HttpError("Invalid email or password! .", 401));
+      }
+      return user;
+    })
+    .then((user) => {
+      return bcrypt
+        .compare(password, user.password)
+        .then((doMatch) => {
+          //domatch or the result here is a boolean true or false
+
+          if (doMatch) {
+            return res.status(200).json({
+              status: "Successful",
+              msg: "Now you are logged in",
+              user: user,
+            });
+          }
+          return next(new HttpError("Login failed, Password error .", 401));
+        })
+        .catch((error) => {
+          if (!error.statusCode) {
+            error.statusCode = 500;
+          }
+          next(error);
+        });
+    })
+
+    .catch((error) => {
+      if (!error.statusCode) {
+        error.statusCode = 500;
+      }
+      next(error);
+    });
+};
+
+exports.signup = signup;
+exports.login = login;
