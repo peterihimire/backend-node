@@ -40,7 +40,7 @@ const createProperty = (req, res, next) => {
     image: image,
   })
     .then((property) => {
-      res.status(201).json({
+      res.status(201).json({ 
         status: "Successful",
         msg: "Property Created",
         property: property,
@@ -81,6 +81,9 @@ const getProperties = (req, res, next) => {
       next(error);
     });
 };
+
+
+
 
 // @route GET api/admin/properties/id
 // @desc To retrieve the data of a single property

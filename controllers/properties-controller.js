@@ -21,6 +21,14 @@ const getProperties = (req, res, next) => {
     });
 };
 
+// @route GET api/admin/properties/id
+// @desc To retrieve the properties created by a particular user
+// @access Public
+const getPropertiesByUserId = (req, res, next) => {
+  const userId = req.params.userId;
+
+}
+
 // @route GET api/properties/id
 // @desc To retrieve a single property with a particular id
 // @access Public
@@ -158,6 +166,7 @@ const deleteBookingItem = (req, res, next) => {
 };
 
 exports.getProperties = getProperties;
+exports.getPropertiesByUserId = getPropertiesByUserId;
 exports.getPropertiesById = getPropertiesById;
 exports.getBooking = getBooking;
 exports.createBooking = createBooking;

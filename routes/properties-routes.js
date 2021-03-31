@@ -14,6 +14,9 @@ router.post("/booking", propertiesController.createBooking);
 // /api/properties/booking => GET
 router.delete("/booking", propertiesController.deleteBookingItem);
 
+// /api/properties/userId => GET
+router.get("/:userId", propertiesController.getPropertiesByUserId);
+
 // /api/properties => GET
 router.get("/", checkAuth, propertiesController.getProperties); //checkAuth was here
 
