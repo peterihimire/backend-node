@@ -113,8 +113,8 @@ Booking.belongsToMany(Property, { through: BookingItem });
 Property.belongsToMany(Booking, { through: BookingItem });
 
 sequelize
-  .sync({ force: true })
-  // .sync()
+  // .sync({ force: true })
+  .sync()
   .then((result) => {
     app.listen(PORT, function () {
       console.log(`Server running on port ${PORT}...`);
