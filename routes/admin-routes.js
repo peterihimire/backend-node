@@ -25,6 +25,7 @@ router.post(
       .isNumeric()
       .withMessage("Completion field must not be empty"),
     check("description").isLength({ min: 5 }),
+    check("creator").not().isEmpty(),
   ],
   adminController.createProperty
 );

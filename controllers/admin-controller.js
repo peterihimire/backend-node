@@ -23,6 +23,7 @@ const createProperty = (req, res, next) => {
   const amount = req.body.amount;
   const completion = req.body.completion;
   const description = req.body.description;
+  const creator = req.body.creator;
   const image = req.file.path;
   console.log(image);
   // const images = "images/property-4.jpg";
@@ -35,6 +36,7 @@ const createProperty = (req, res, next) => {
     amount: amount,
     completion: completion,
     description: description,
+    creator: creator,
     image: image,
   })
     .then((property) => {

@@ -33,6 +33,10 @@ const Property = sequelize.define("property", {
     type: Sequelize.TEXT,
     allowNull: false,
   },
+  creator: {
+    type: Sequelize.TEXT,
+    allowNull: false,
+  },
   image: {
     type: Sequelize.STRING,
     allowNull: false,
