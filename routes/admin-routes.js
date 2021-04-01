@@ -58,7 +58,7 @@ router.patch("/properties/:propertyId", adminController.updatePropertiesImage);
 router.delete("/properties/:propertyId", adminController.deletePropertiesById);
 
 // /api/admin/users => GET
-router.get("/users", checkAuth, adminController.getUsers);
+router.get("/users", adminController.getUsers);
 
 // /api/admin/users/userId => GET
 router.get("/users/:userId", checkAuth, adminController.getUserById);
