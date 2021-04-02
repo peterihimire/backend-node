@@ -178,7 +178,7 @@ const login = (req, res, next) => {
       return existingUser;
     })
     .then((existingUser) => {
-      // console.log(existingUser);
+      console.log(existingUser);
       return bcrypt
         .compare(password, existingUser.password)
         .then((doMatch) => {

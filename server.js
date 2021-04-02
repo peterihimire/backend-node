@@ -107,14 +107,17 @@ app.use((error, req, res, next) => {
 const PORT = process.env.PORT || 4000;
 
 // RELATIONS OR SEQUELIZE ASSOCIATIONS
+Property.belongsTo(User, { constraints: true, onDelete: "CASCADE" });
+User.hasMany(Property);
+//
 User.hasOne(Booking);
 Booking.belongsTo(User);
 Booking.belongsToMany(Property, { through: BookingItem });
 Property.belongsToMany(Booking, { through: BookingItem });
 
 sequelize
-  // .sync({ force: true })
-  .sync()
+  .sync({ force: true })
+  // .sync()
   .then((result) => {
     app.listen(PORT, function () {
       console.log(`Server running on port ${PORT}...`);

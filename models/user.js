@@ -21,6 +21,10 @@ const User = sequelize.define("user", {
     type: Sequelize.STRING,
     allowNull: false,
   },
+  // properties: {
+  //   type: Sequelize.STRING,
+  //   allowNull: false,
+  // },
   isAdmin: {
     type: Sequelize.BOOLEAN,
     defaultValue: false,
