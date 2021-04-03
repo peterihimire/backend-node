@@ -56,14 +56,20 @@ app.use("/images", express.static(path.join(__dirname, "images")));
 // FOR C.O.R.S ERROR
 app.use((req, res, next) => {
   res.setHeader("Access-Control-Allow-Origin", "*");
+  res.setHeader("Access-Control-Allow-Credentials", true);
   res.setHeader(
     "Access-Control-Allow-Methods",
-    "GET, POST, PUT, PATCH, DELETE"
+    "GET, POST, PUT, PATCH, DELETE, OPTIONS"
   );
   res.setHeader(
     "Access-Control-Allow-Headers",
     "Content-Type,Accept, Origin, X-Requested-With, Authorization"
   );
+  // if ("OPTIONS" === req.method) {
+  //   res.send(200);
+  // } else {
+  //   next();
+  // }
   next();
 });
 
@@ -116,8 +122,8 @@ Booking.belongsToMany(Property, { through: BookingItem });
 Property.belongsToMany(Booking, { through: BookingItem });
 
 sequelize
-  .sync({ force: true })
-  // .sync()
+  // .sync({ force: true })
+  .sync()
   .then((result) => {
     app.listen(PORT, function () {
       console.log(`Server running on port ${PORT}...`);

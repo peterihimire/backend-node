@@ -26,8 +26,6 @@ const createProperty = (req, res, next) => {
   const creator = req.body.creator;
   const image = req.file.path;
   console.log(image);
-  // const images = "images/property-4.jpg";
-  // const image = req.body.image;
 
   Property.create({
     name: name,
@@ -40,7 +38,7 @@ const createProperty = (req, res, next) => {
     image: image,
   })
     .then((property) => {
-      res.status(201).json({ 
+      res.status(201).json({
         status: "Successful",
         msg: "Property Created",
         property: property,
@@ -52,9 +50,6 @@ const createProperty = (req, res, next) => {
       }
       next(error);
     });
-  // .catch((err) => {
-  //   console.log(err);
-  // });
 };
 
 // @route GET api/admin/properties
@@ -81,9 +76,6 @@ const getProperties = (req, res, next) => {
       next(error);
     });
 };
-
-
-
 
 // @route GET api/admin/properties/id
 // @desc To retrieve the data of a single property
