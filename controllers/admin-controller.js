@@ -76,7 +76,6 @@ const getProperties = (req, res, next) => {
       next(error);
     });
 };
-
 // @route GET api/admin/properties/id
 // @desc To retrieve the data of a single property
 // @access Public
