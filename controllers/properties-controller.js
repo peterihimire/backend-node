@@ -1,4 +1,5 @@
 const Property = require("../models/property");
+const User = require("../models/user");
 const HttpError = require("../models/http-error");
 const Booking = require("../models/booking");
 
@@ -6,7 +7,7 @@ const Booking = require("../models/booking");
 // @desc To retrieve all properties
 // @access Public
 const getProperties = (req, res, next) => {
-  Property.findAll()
+  Property.findAll({ include: User })
     .then((properties) => {
       res.status(200).json({
         status: "Successful",
@@ -22,45 +23,45 @@ const getProperties = (req, res, next) => {
     });
 };
 
-// @route GET api/properties/userId
-// @desc To retrieve the properties created by a particular user
-// @access Private
-const getPropertiesByUserId = (req, res, next) => {
-  const userId = req.params.userId;
+// // @route GET api/properties/userId
+// // @desc To retrieve the properties created by a particular user
+// // @access Private
+// const getPropertiesByUserId = (req, res, next) => {
+//   const userId = req.params.userId;
 
-  Property.findAll({ where: { creator: userId } })
-    .then((properties) => {
-      if (!properties || properties.length === 0) {
-        // return next(
-        //   new HttpError(
-        //     "Could not find property(s) for the provided user id.",
-        //     404
-        //   )
-        // );
-        const error = new Error(
-          "Could not find property(s) for the provided user id."
-        );
-        error.code = 404;
-        return next(error);
-      }
-      // console.log(properties);
-      return properties;
-    })
-    .then((result) => {
-      console.log(result);
-      res.status(200).json({
-        status: "Success",
-        msg: "Properties created by this user",
-        properties: result,
-      });
-    })
-    .catch((error) => {
-      if (!error.statusCode) {
-        error.statusCode = 500;
-      }
-      // next(error); Having this returns an error [cannot set headers after they are sent to the client] called next() twice.
-    });
-};
+//   Property.findAll({ where: { creator: userId } })
+//     .then((properties) => {
+//       if (!properties || properties.length === 0) {
+//         // return next(
+//         //   new HttpError(
+//         //     "Could not find property(s) for the provided user id.",
+//         //     404
+//         //   )
+//         // );
+//         const error = new Error(
+//           "Could not find property(s) for the provided user id."
+//         );
+//         error.code = 404;
+//         return next(error);
+//       }
+//       // console.log(properties);
+//       return properties;
+//     })
+//     .then((result) => {
+//       console.log(result);
+//       res.status(200).json({
+//         status: "Success",
+//         msg: "Properties created by this user",
+//         properties: result,
+//       });
+//     })
+//     .catch((error) => {
+//       if (!error.statusCode) {
+//         error.statusCode = 500;
+//       }
+//       // next(error); Having this returns an error [cannot set headers after they are sent to the client] called next() twice.
+//     });
+// };
 
 // @route GET api/properties/id
 // @desc To retrieve a single property with a particular id
@@ -199,7 +200,7 @@ const deleteBookingItem = (req, res, next) => {
 };
 
 exports.getProperties = getProperties;
-exports.getPropertiesByUserId = getPropertiesByUserId;
+// exports.getPropertiesByUserId = getPropertiesByUserId;
 exports.getPropertiesById = getPropertiesById;
 exports.getBooking = getBooking;
 exports.createBooking = createBooking;

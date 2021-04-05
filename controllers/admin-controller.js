@@ -25,6 +25,7 @@ const createProperty = (req, res, next) => {
   const description = req.body.description;
   const creator = req.body.creator;
   const image = req.file.path;
+  const userId = req.body.creator;
   console.log(image);
 
   Property.create({
@@ -36,6 +37,7 @@ const createProperty = (req, res, next) => {
     description: description,
     creator: creator,
     image: image,
+    userId: userId,
   })
     .then((property) => {
       res.status(201).json({
@@ -56,7 +58,7 @@ const createProperty = (req, res, next) => {
 // @desc To retrieve the data of all properties
 // @access Public
 const getProperties = (req, res, next) => {
-  Property.findAll()
+  Property.findAll({ include: [User] })
     .then((properties) => {
       if (!properties || properties.length === 0) {
         const error = new Error("No properties found.");
@@ -242,7 +244,7 @@ const deletePropertiesById = (req, res, next) => {
 // @desc To retrieve the data of all users
 // @access Private
 const getUsers = (req, res, next) => {
-  User.findAll()
+  User.findAll({ include: Property })
     .then((users) => {
       if (!users || users.length === 0) {
         const error = new Error("No users record found.");
