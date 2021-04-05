@@ -7,6 +7,7 @@ const Booking = require("../models/booking");
 // @desc To retrieve all properties
 // @access Public
 const getProperties = (req, res, next) => {
+  // the include here adds user model to the property model, which has already been associated
   Property.findAll({ include: User })
     .then((properties) => {
       res.status(200).json({

@@ -244,6 +244,7 @@ const deletePropertiesById = (req, res, next) => {
 // @desc To retrieve the data of all users
 // @access Private
 const getUsers = (req, res, next) => {
+  // the include here adds property model to the user model, which has already been associated
   User.findAll({ include: Property })
     .then((users) => {
       if (!users || users.length === 0) {
