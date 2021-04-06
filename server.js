@@ -79,7 +79,7 @@ app.use((req, res, next) => {
 app.use("/api/users", usersRoutes);
 
 // => /api/properties/
-app.use("/api/properties", propertiesRoutes);
+app.use("/api", propertiesRoutes);
 
 // => /api/admin/
 app.use("/api/admin", adminRoutes);

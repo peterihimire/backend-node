@@ -5,22 +5,22 @@ const checkAuth = require("../middleware/check-auth");
 
 const router = express.Router();
 
-// /api/properties/booking => GET
-router.get("/booking", propertiesController.getBooking);
-
-// /api/properties/booking => Post
-router.post("/booking", propertiesController.createBooking);
-
-// /api/properties/booking => GET
-router.delete("/booking", propertiesController.deleteBookingItem);
-
-// // /api/properties/userId => GET
-// router.get("/:userId", propertiesController.getPropertiesByUserId);
+// /api/property/propertyId => GET
+router.get("/property/:propertyId", propertiesController.getPropertyById);
 
 // /api/properties => GET
-router.get("/", propertiesController.getProperties); //checkAuth was here
+router.get("/properties", propertiesController.getProperties); //checkAuth was here
 
-// /api/properties/propertyId => GET
-router.get("/:propertyId", propertiesController.getPropertiesById);
+// /api/properties/booking => GET
+router.get("/properties/booking", propertiesController.getBooking);
+
+// /api/properties/booking => Post
+router.post("/properties/booking", propertiesController.createBooking);
+
+// /api/properties/booking => GET
+router.delete("/properties/booking", propertiesController.deleteBookingItem);
+
+// /api/properties/userId => GET
+router.get("properties/:userId", propertiesController.getPropertiesByUserId);
 
 module.exports = router;
