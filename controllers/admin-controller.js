@@ -275,7 +275,7 @@ const getUsers = (req, res, next) => {
 // @access Public
 const getUserById = (req, res, next) => {
   const userId = req.params.userId;
-  User.findByPk(userId)
+  User.findByPk(userId, { include: Property })
     .then((user) => {
       if (!user) {
         return next(new HttpError("User not found for this specific id.", 404)); // Error handling with both error model and error middleware

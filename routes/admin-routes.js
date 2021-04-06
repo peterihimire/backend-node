@@ -61,7 +61,7 @@ router.delete("/properties/:propertyId", adminController.deletePropertiesById);
 router.get("/users", adminController.getUsers);
 
 // /api/admin/users/userId => GET
-router.get("/users/:userId", checkAuth, adminController.getUserById);
+router.get("/users/:userId", adminController.getUserById); //checkAuth was here
 
 // /api/admin/users/userId => DELETE
 router.delete("/users/:userId", adminController.deleteUserById);
