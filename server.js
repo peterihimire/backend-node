@@ -65,12 +65,12 @@ app.use((req, res, next) => {
     "Access-Control-Allow-Headers",
     "Content-Type,Accept, Origin, X-Requested-With, Authorization"
   );
-  // if ("OPTIONS" === req.method) {
-  //   res.send(200);
-  // } else {
-  //   next();
-  // }
-  next();
+  if ("OPTIONS" === req.method) {
+    res.send(200);
+  } else {
+    next();
+  }
+  // next();
 });
 
 // ROUTES MIDDLEWARE

@@ -4,7 +4,9 @@ const HttpError = require("../models/http-error");
 
 module.exports = (req, res, next) => {
   if (req.method === "OPTIONS") {
-    return next();
+    return res.send(200);
+  } else {
+    next();
   }
   //NOT CASE SENSITIVE, AND THE CONVENTION IS Authorization: 'Bearer TOKEN'
   try {
