@@ -34,6 +34,10 @@ const User = sequelize.define("user", {
     type: Sequelize.BOOLEAN,
     defaultValue: false,
   },
+  image: {
+    type: Sequelize.STRING,
+    allowNull: false,
+  },
 });
 
 module.exports = User;
