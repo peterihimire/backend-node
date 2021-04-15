@@ -66,7 +66,7 @@ app.use((req, res, next) => {
     "Content-Type,Accept, Origin, X-Requested-With, Authorization"
   );
   if ("OPTIONS" === req.method) {
-    res.send(200);
+    res.sendStatus(200);
   } else {
     next();
   }
@@ -75,19 +75,19 @@ app.use((req, res, next) => {
 
 // ROUTES MIDDLEWARE
 
+// => /api/admin/
+app.use("/api/admin", adminRoutes);
+
 // => /api/users/
 app.use("/api/users", usersRoutes);
 
 // => /api/properties/
 app.use("/api", propertiesRoutes);
 
-// => /api/admin/
-app.use("/api/admin", adminRoutes);
-
 // ERROR HANDLING MIDDLEWARE FOR UNREGISTERED ROUTES
 app.use((req, res, next) => {
   const error = new HttpError(
-    "could not find this route! To access property api, use http://localhost:4000/api/properties",
+    "could not find this route! Make sure the URL is correct.",
     404
   );
   throw error;

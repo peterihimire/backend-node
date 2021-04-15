@@ -38,6 +38,7 @@ const signup = (req, res, next) => {
                 name: name,
                 email: email,
                 password: hashedPw,
+                image: "images/profile.png",
               })
                 .then((createdUser) => {
                   res.status(201).json({
@@ -58,6 +59,7 @@ const signup = (req, res, next) => {
               email: email,
               password: hashedPw,
               isAdmin: true,
+              image: "images/profile.png",
             })
               .then((createdUser) => {
                 res.status(201).json({
@@ -197,7 +199,7 @@ const login = (req, res, next) => {
               token: token,
               userId: existingUser.id,
               userName: existingUser.name,
-              admin: existingUser.isAdmin
+              admin: existingUser.isAdmin,
               // user: user,
             });
           }

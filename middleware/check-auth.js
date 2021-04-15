@@ -3,11 +3,11 @@ const jwt = require("jsonwebtoken");
 const HttpError = require("../models/http-error");
 
 module.exports = (req, res, next) => {
-  if (req.method === "OPTIONS") {
-    return res.send(200);
-  } else {
-    next();
-  }
+  // if (req.method === "OPTIONS") {
+  //   return res.send(200);
+  // } else {
+  //   next();
+  // }
   //NOT CASE SENSITIVE, AND THE CONVENTION IS Authorization: 'Bearer TOKEN'
   try {
     const token = req.headers.authorization.split(" ")[1];

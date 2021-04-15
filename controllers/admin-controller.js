@@ -9,13 +9,13 @@ const { validationResult } = require("express-validator");
 const createProperty = (req, res, next) => {
   const errors = validationResult(req);
   if (!errors.isEmpty()) {
-    return next(
+    next(
       new HttpError("Invalid inputs passed, please check your fields.", 422)
     );
   }
   // This check is for image upload check
   if (!req.file) {
-    return next(new HttpError("No image provided.", 422));
+    next(new HttpError("No image provided.", 422));
   }
   const name = req.body.name;
   const slug = req.body.slug;
