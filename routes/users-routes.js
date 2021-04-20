@@ -21,7 +21,7 @@ router.post(
       .trim()
       .isLength({ min: 6 })
       .withMessage("Password must be minimum of 6 char."),
-      // Added this for admin check
+    // Added this for admin check
     check("admincode").not().isEmpty().withMessage("Enter admin secrete code."),
   ],
   usersController.signup
@@ -29,6 +29,12 @@ router.post(
 
 // /api/users/login => POST
 router.post("/login", usersController.login);
+
+// /api/users/userId => PUT
+router.put("/:userId", usersController.updateUserById);
+
+// /api/users/userId => PATCH
+router.patch("/:userId", usersController.updateUserImage);
 
 module.exports = router;
 //
