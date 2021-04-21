@@ -189,7 +189,7 @@ const login = (req, res, next) => {
           if (doMatch) {
             const token = jwt.sign(
               { email: existingUser.email, userId: existingUser.id },
-              "ihimireeromoselepeter",
+              "process.env.JWT_KEY",
               { expiresIn: "1h" }
             );
 
