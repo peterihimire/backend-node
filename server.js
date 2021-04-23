@@ -110,7 +110,7 @@ app.use((error, req, res, next) => {
   });
 });
 
-const PORT = process.env.PORT || 4000;
+const PORT = `${process.env.PORT}`;
 
 // RELATIONS OR SEQUELIZE ASSOCIATIONS
 Property.belongsTo(User, { constraints: true, onDelete: "CASCADE" });

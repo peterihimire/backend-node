@@ -5,6 +5,7 @@
     "DB_NAME": "sell-car",
     "DB_HOST": "localhost",
     "DB_DIALECT": "mysql",
-    "JWT_KEY": "this_is_my_secretekey_123"
+    "JWT_KEY": "this_is_my_secretekey_123",
+    "PORT": 4000
   }
 }
