@@ -1,11 +1,12 @@
 {
   "env": {
-    "DB_USER": "root",
-    "DB_PASSWORD": "Eromosele2121991@",
-    "DB_NAME": "sell-car",
-    "DB_HOST": "localhost",
+    "DB_USER": "bf765d58cf30da",
+    "DB_PASSWORD": "b8c09fb0",
+    "DB_NAME": "heroku_27232cf68bd089a",
+    "DB_HOST": "us-cdbr-east-03.cleardb.com",
     "DB_DIALECT": "mysql",
     "JWT_KEY": "this_is_my_secretekey_123",
     "PORT": 4000
   }
 }
+mysql://bf765d58cf30da:b8c09fb0@us-cdbr-east-03.cleardb.com/heroku_27232cf68bd089a?reconnect=true
